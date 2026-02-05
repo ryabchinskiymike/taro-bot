@@ -31,10 +31,14 @@ export default function Home() {
   const [readings, setReadings] = useState<TarotReading[]>([]);
   const [todayReading, setTodayReading] = useState<TarotReading | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [hoursUntilNext, setHoursUntilNext] = useState(24);
 
-  // Load History & User
+  // Load History & User - STRICTLY CLIENT SIDE
   useEffect(() => {
-    // 1. Telegram Safety Check
+    // 1. Calculate time logic only on client to avoid hydration mismatch
+    setHoursUntilNext(24 - new Date().getHours());
+
+    // 2. Telegram Safety Check
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       try {
         window.Telegram.WebApp.ready();
@@ -46,7 +50,7 @@ export default function Home() {
       }
     }
 
-    // 2. Local Storage
+    // 3. Local Storage
     try {
       const stored = localStorage.getItem('mystic_oracle_history');
       if (stored) {
@@ -66,9 +70,6 @@ export default function Home() {
     if (!todayReading) return readings;
     return readings.filter(r => r.date !== todayReading.date);
   }, [readings, todayReading]);
-
-  // Hours until next
-  const hoursUntilNext = 24 - new Date().getHours();
 
   const handleReveal = async () => {
     setIsLoading(true);
