@@ -34,26 +34,30 @@ export default function Home() {
 
   // Load History & User
   useEffect(() => {
-    // 1. Telegram
+    // 1. Telegram Safety Check
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-      const tgName = window.Telegram.WebApp.initDataUnsafe?.user?.first_name;
-      if (tgName) setUserName(tgName);
+      try {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+        const tgName = window.Telegram.WebApp.initDataUnsafe?.user?.first_name;
+        if (tgName) setUserName(tgName);
+      } catch (e) {
+        console.warn('Telegram SDK not available or failed', e);
+      }
     }
 
     // 2. Local Storage
-    const stored = localStorage.getItem('mystic_oracle_history');
-    if (stored) {
-      try {
+    try {
+      const stored = localStorage.getItem('mystic_oracle_history');
+      if (stored) {
         const parsed = JSON.parse(stored);
         setReadings(parsed);
         const today = new Date().toISOString().split('T')[0];
         const current = parsed.find((r: TarotReading) => r.date === today);
         if (current) setTodayReading(current);
-      } catch (e) {
-        console.error("Failed to load history", e);
       }
+    } catch (e) {
+      console.error("Failed to load history", e);
     }
   }, []);
 
