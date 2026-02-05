@@ -1,0 +1,54 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 229, 229, 229;
+  --background-start-rgb: 5, 5, 5;
+  --background-end-rgb: 5, 5, 5;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  font-family: 'Cormorant Garamond', serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+/* Scrollbar hiding */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Effects */
+.mystic-glow {
+  text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+}
+
+.gold-text-gradient {
+  background: linear-gradient(to bottom, #fef3c7, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border-gradient {
+  border: 1px solid transparent;
+  background: linear-gradient(#0a0a0a, #0a0a0a) padding-box,
+              linear-gradient(135deg, #78350f 0%, #fbbf24 50%, #78350f 100%) border-box;
+}
+
+.btn-gold-glow {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+.btn-gold-glow:hover {
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.3), inset 0 0 10px rgba(245, 158, 11, 0.2);
+}
