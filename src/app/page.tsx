@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -38,7 +37,7 @@ export default function Home() {
     // 1. Calculate time logic only on client to avoid hydration mismatch
     setHoursUntilNext(24 - new Date().getHours());
 
-    // 2. Telegram Safety Check
+    // 2. Telegram Safety Check - wrapped in useEffect
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       try {
         window.Telegram.WebApp.ready();
