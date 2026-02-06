@@ -91,7 +91,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center py-6 px-4 relative overflow-x-hidden z-10 selection:bg-amber-900 selection:text-amber-100">
+    <div className="min-h-screen w-full flex flex-col items-center py-6 px-4 relative overflow-x-hidden z-10 selection:bg-amber-900 selection:text-amber-100 bg-[#050505]">
       
       {/* Header */}
       <header className="w-full flex justify-between items-end mb-10 border-b border-amber-500/20 pb-4 relative">

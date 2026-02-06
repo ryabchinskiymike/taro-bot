@@ -1,21 +1,19 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   --foreground-rgb: 229, 229, 229;
-  --background-start-rgb: 5, 5, 5;
-  --background-end-rgb: 5, 5, 5;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
+  background-color: #050505; /* Deep Obsidian fallback */
   font-family: 'Cormorant Garamond', serif;
   overflow-x: hidden;
 }
 
+/* Ensure headings use the correct font */
 h1, h2, h3, .font-cinzel {
   font-family: 'Cinzel', serif;
 }

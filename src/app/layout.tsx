@@ -20,7 +20,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet" />
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
       </head>
-      <body className="antialiased min-h-screen relative">
+      <body className="antialiased min-h-screen relative bg-[#050505] text-[#e5e5e5]">
         {/* Noise Overlay */}
         <div className="fixed inset-0 pointer-events-none z-[1] opacity-[0.05]"
              style={{
