@@ -1,19 +1,19 @@
 import { TarotReading } from './types';
 
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp?: {
-        initDataUnsafe?: {
-          user?: {
-            id?: number;
-            first_name?: string;
-            username?: string;
-          };
+// Define a local interface to safely access Telegram WebApp properties 
+// without conflicting with other global declarations in the project.
+interface TelegramWindow extends Window {
+  Telegram?: {
+    WebApp?: {
+      initDataUnsafe?: {
+        user?: {
+          id?: number;
+          first_name?: string;
+          username?: string;
         };
       };
     };
-  }
+  };
 }
 
 export async function generateTarotReading(userName: string): Promise<TarotReading> {
@@ -21,8 +21,15 @@ export async function generateTarotReading(userName: string): Promise<TarotReadi
   let tgId = 'demo-user-123';
   
   // Try to get actual Telegram ID from window if available
-  if (typeof window !== 'undefined' && window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
-    tgId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
+  if (typeof window !== 'undefined') {
+    // Use type assertion to bypass potential conflicts with other global window definitions
+    // that might not include the 'id' property on the user object.
+    const customWindow = window as unknown as TelegramWindow;
+    const tgUser = customWindow.Telegram?.WebApp?.initDataUnsafe?.user;
+    
+    if (tgUser?.id) {
+      tgId = tgUser.id.toString();
+    }
   }
 
   const response = await fetch('/api/daily-card', {

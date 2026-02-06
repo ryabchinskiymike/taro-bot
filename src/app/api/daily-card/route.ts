@@ -18,11 +18,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { tgId, name } = body;
 
+    // Validate Input
     if (!tgId) {
       return NextResponse.json({ error: 'Telegram ID is required' }, { status: 400 });
     }
 
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
 
     // 1. Find or Create User
     const user = await prisma.user.upsert({
@@ -34,7 +35,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // 2. Check for existing reading for TODAY
+    // 2. Check Database for Existing Reading (24h Logic)
+    // We strictly check if a reading exists for the user for the current date.
     const existingReading = await prisma.reading.findUnique({
       where: {
         userId_date: {
@@ -48,16 +50,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(existingReading);
     }
 
-    // 3. Generate New Reading (if none exists)
+    // 3. Generate New Reading (Gemini 1.5 Pro + Imagen)
     const apiKey = process.env.API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+      return NextResponse.json({ error: 'Server configuration error: API Key missing' }, { status: 500 });
     }
 
     const ai = new GoogleGenAI({ apiKey });
     const randomCard = TAROT_CARDS[Math.floor(Math.random() * TAROT_CARDS.length)];
 
-    // Parallel execution for speed: Image + Text
+    // Parallel execution: Text Generation + Image Generation
     const [imageResult, textResult] = await Promise.allSettled([
       // A. Generate Image
       ai.models.generateImages({
@@ -69,7 +71,7 @@ export async function POST(req: NextRequest) {
           outputMimeType: 'image/jpeg'
         }
       }),
-      // B. Generate Text
+      // B. Generate Text Prediction
       ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: `
@@ -105,15 +107,15 @@ export async function POST(req: NextRequest) {
       })
     ]);
 
-    // Process Image Result
-    let imageBase64 = 'https://picsum.photos/300/400?grayscale&blur=2'; // Fallback
+    // Process Image Result (with fallback)
+    let imageBase64 = 'https://picsum.photos/300/400?grayscale&blur=2'; 
     if (imageResult.status === 'fulfilled' && imageResult.value.generatedImages?.[0]?.image?.imageBytes) {
       imageBase64 = `data:image/jpeg;base64,${imageResult.value.generatedImages[0].image.imageBytes}`;
     } else {
       console.warn("Image generation failed or quota exceeded", imageResult.status === 'rejected' ? imageResult.reason : 'No data');
     }
 
-    // Process Text Result
+    // Process Text Result (with fallback)
     let predictionData = {
       cardName: randomCard,
       horoscope: "Туман скрывает будущее. Прислушайся к тишине.",
@@ -130,7 +132,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 4. Save to DB
+    // 4. Save to Database
     const newReading = await prisma.reading.create({
       data: {
         userId: user.id,
